@@ -2,6 +2,8 @@
 
 A new Flutter project.
 
+- Set google map API and set API_KEY to manifest file
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
