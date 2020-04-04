@@ -8,8 +8,9 @@ class AllCountries extends StatefulWidget {
 }
 
 class _AllCountriesState extends State<AllCountries> {
-  Future<List> countries;
-  Future<List> getCountries() async {
+  List countries = [];
+  bool isSearching = false;
+  getCountries() async {
     var response = await Dio().get('https://restcountries.eu/rest/v2/all');
     // print(response.data);
     return response.data;
@@ -20,9 +21,17 @@ class _AllCountriesState extends State<AllCountries> {
 
   @override
   void initState() {
-    countries = getCountries();
-    print(countries);
+    getCountries().then((data) {
+      setState(() {
+        countries = data;
+      });
+    });
+    // print(countries);
     super.initState();
+  }
+
+  void _filterCountries(value) {
+    print(value);
   }
 
   @override
@@ -32,22 +41,48 @@ class _AllCountriesState extends State<AllCountries> {
     // getCountries();
     return Scaffold(
         appBar: AppBar(
-            // backgroundColor: Colors.,
-            title: Text('All Countries')),
+          // backgroundColor: Colors.,
+          title: !isSearching
+              ? Text('All Countries')
+              : TextField(
+                  onChanged: (value) {
+                    _filterCountries(value);
+                  },
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                      icon: Icon(Icons.search, color: Colors.white),
+                      hintText: 'What are you looking for?',
+                      hintStyle: TextStyle(color: Colors.white))),
+          actions: <Widget>[
+            isSearching
+                ? IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      setState(() {
+                        this.isSearching = false;
+                      });
+                    })
+                : IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      setState(() {
+                        this.isSearching = true;
+                      });
+                    })
+          ],
+        ),
         body: Container(
             // child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: FutureBuilder<List>(
-                future: countries,
-                builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-                  if (snapshot.hasData) {
-                    print(snapshot.data);
-                    return ListView.builder(
-                        itemBuilder: (BuildContext context, int index) {
+            child: countries.length > 0
+                ? ListView.builder(
+                    itemCount: countries.length,
+                    itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => Country(snapshot.data[index])));
+                                builder: (context) =>
+                                    Country(countries[index])));
                             // print("Hello");
                           },
                           child: Card(
@@ -55,46 +90,10 @@ class _AllCountriesState extends State<AllCountries> {
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 8),
-                                child: Text(
-                                    snapshot.data[index]['name'],
+                                child: Text(countries[index]['name'],
                                     style: TextStyle(fontSize: 8)),
                               )));
-                    });
-                  }
-                  return null;
-                })
-            // ListView(
-            //   children: <Widget>[
-            //     GestureDetector(
-            //         onTap: () {
-            //           Navigator.of(context).push(MaterialPageRoute(
-            //               builder: (context) => Country("Nepal")));
-            //           // print("Hello");
-            //         },
-            //         child: Card(
-            //             elevation: 10,
-            //             child: Padding(
-            //               padding: const EdgeInsets.symmetric(
-            //                   vertical: 10, horizontal: 8),
-            //               child:
-            //                   Text(countryName, style: TextStyle(fontSize: 8)),
-            //             ))),
-            //     GestureDetector(
-            //         onTap: () {
-            //           Navigator.of(context).push(MaterialPageRoute(
-            //               builder: (context) => Country('India')));
-            //           // print("Hello");
-            //         },
-            //         child: Card(
-            //             elevation: 10,
-            //             child: Padding(
-            //               padding: const EdgeInsets.symmetric(
-            //                   vertical: 10, horizontal: 8),
-            //               child: Text('India', style: TextStyle(fontSize: 8)),
-            //             ))),
-            //   ],
-            // )
-            // )
-            ));
+                    })
+                : Center(child: CircularProgressIndicator())));
   }
 }
