@@ -84,9 +84,7 @@ class _AllCountriesState extends State<AllCountries> {
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                    Country(filteredCountries[index])));
+                            Navigator.of(context).pushNamed(Country.routeName, arguments: countries[index]);
                             // print("Hello");
                           },
                           child: Card(

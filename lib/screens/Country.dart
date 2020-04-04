@@ -4,19 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Country extends StatelessWidget {
-  final Map country;
+  // final Map country;
+  static const routeName = '/country';
   // Constructor
-  Country(this.country);
-  
+  // Country(this.country);
 
   @override
   Widget build(BuildContext context) {
-    print(country);
-
+    // print(country);
+    final Map country = ModalRoute.of(context).settings.arguments;
     return Scaffold(
         appBar: AppBar(
             // backgroundColor: Colors.,
-            title: Text(this.country['name'])),
+            title: Text(country['name'])),
         body: Container(
             padding: EdgeInsets.all(9.0),
             child: GridView(
@@ -52,8 +52,11 @@ class Country extends StatelessWidget {
                         color: Colors.lightBlue)),
                 GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => CountryMap(name: country['name'], latlang: country['latlng'],)));
+                      Navigator.of(context).pushNamed(CountryMap.routeName,
+                          arguments: {
+                            'name': country['name'],
+                            'latlng': country['latlng']
+                          });
                     },
                     child: CountryCard(title: 'Show on map')),
               ],
