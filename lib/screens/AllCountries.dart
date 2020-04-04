@@ -9,21 +9,18 @@ class AllCountries extends StatefulWidget {
 
 class _AllCountriesState extends State<AllCountries> {
   List countries = [];
+  List filteredCountries = [];
   bool isSearching = false;
   getCountries() async {
     var response = await Dio().get('https://restcountries.eu/rest/v2/all');
-    // print(response.data);
     return response.data;
-    // setState(() {
-    // countries = response.data;
-    // });
   }
 
   @override
   void initState() {
     getCountries().then((data) {
       setState(() {
-        countries = data;
+        countries = filteredCountries = data;
       });
     });
     // print(countries);
@@ -32,6 +29,12 @@ class _AllCountriesState extends State<AllCountries> {
 
   void _filterCountries(value) {
     print(value);
+    setState(() {
+      filteredCountries = countries
+          .where((country) =>
+              country['name'].toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
@@ -60,6 +63,7 @@ class _AllCountriesState extends State<AllCountries> {
                     onPressed: () {
                       setState(() {
                         this.isSearching = false;
+                        this.filteredCountries = this.countries;
                       });
                     })
                 : IconButton(
@@ -74,15 +78,15 @@ class _AllCountriesState extends State<AllCountries> {
         body: Container(
             // child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: countries.length > 0
+            child: filteredCountries.length > 0
                 ? ListView.builder(
-                    itemCount: countries.length,
+                    itemCount: filteredCountries.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) =>
-                                    Country(countries[index])));
+                                    Country(filteredCountries[index])));
                             // print("Hello");
                           },
                           child: Card(
@@ -90,7 +94,7 @@ class _AllCountriesState extends State<AllCountries> {
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 8),
-                                child: Text(countries[index]['name'],
+                                child: Text(filteredCountries[index]['name'],
                                     style: TextStyle(fontSize: 8)),
                               )));
                     })

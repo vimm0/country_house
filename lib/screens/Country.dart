@@ -1,3 +1,4 @@
+import 'package:country_house/screens/CountryMap.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,9 +7,12 @@ class Country extends StatelessWidget {
   final Map country;
   // Constructor
   Country(this.country);
+  
 
   @override
   Widget build(BuildContext context) {
+    print(country);
+
     return Scaffold(
         appBar: AppBar(
             // backgroundColor: Colors.,
@@ -22,30 +26,36 @@ class Country extends StatelessWidget {
                 FlipCard(
                     direction: FlipDirection.VERTICAL,
                     front: CountryCard(title: 'Capital'),
-                    back: CountryDetailCard(title: country['capital'], color: Colors.deepOrange)),
+                    back: CountryDetailCard(
+                        title: country['capital'], color: Colors.deepOrange)),
                 FlipCard(
                     direction: FlipDirection.VERTICAL,
                     front: CountryCard(title: 'Population'),
-                    back: CountryDetailCard(title: country['population'].toString(), color: Colors.deepPurple)),
+                    back: CountryDetailCard(
+                        title: country['population'].toString(),
+                        color: Colors.deepPurple)),
                 FlipCard(
                     direction: FlipDirection.VERTICAL,
                     front: CountryCard(title: 'Flag'),
-                    back:
-                      Card(
+                    back: Card(
                         // color: Colors.lime,
                         elevation: 10,
-                        child: Center(child: SvgPicture.network(country['flag']),)
-                      )
-                    ),
-                    // back: CountryDetailCard(title: country['flag'], color: Colors.cyan)),
+                        child: Center(
+                          child: SvgPicture.network(country['flag']),
+                        ))),
+                // back: CountryDetailCard(title: country['flag'], color: Colors.cyan)),
                 FlipCard(
                     direction: FlipDirection.VERTICAL,
                     front: CountryCard(title: 'Currency'),
-                    back: CountryDetailCard(title: country['currencies'][0]['name'], color: Colors.lightBlue)),
-                FlipCard(
-                    direction: FlipDirection.VERTICAL,
-                    front: CountryCard(title: 'Show on map'),
-                    back: CountryDetailCard(title: country['capital'], color: Colors.green)),
+                    back: CountryDetailCard(
+                        title: country['currencies'][0]['name'],
+                        color: Colors.lightBlue)),
+                GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (ctx) => CountryMap(name: country['name'], latlang: country['latlng'],)));
+                    },
+                    child: CountryCard(title: 'Show on map')),
               ],
             )));
   }
